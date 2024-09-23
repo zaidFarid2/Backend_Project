@@ -198,7 +198,7 @@ const updateRefreshToken = asyncHandler( async()=>{
         .cookie("access Token",accesssToken)
         .cookie("refresh Token",newRefreshToken)
         .json(
-            ApiResponse(200,{accesssToken,newRefreshToken},"Token Redfreshed")
+            new ApiResponse(200,{accesssToken,newRefreshToken},"Token Redfreshed")
         )
     } catch (error) {
         throw new ApiError(401,error?.message|| "Invalid refresh Token")
@@ -226,7 +226,7 @@ const  changeCurrentPassword = asyncHandler( async ()=>{
     return res
     .status(200)
     .json(
-         new ApiResponse(200,{},"Password changed Successfully")
+        new ApiResponse(200,{},"Password changed Successfully")
     )
 
 })
@@ -251,7 +251,7 @@ const updateUserDetails = asyncHandler( async ()=>{
     const user  = User.findByIdAndUpdate(req.user?._id,{$set: {email:email,fullName :fullName} },{new:true}).select("-password")
     return res
     .status(200)
-    .json(ApiResponse(200,{user},"User details  updated seaSeamlessly "))
+    .json(new ApiResponse(200,{user},"User details  updated Seamlessly "))
 
 })
 
@@ -271,7 +271,7 @@ const updateUserAvatar = asyncHandler( async ()=>{
     ).select("-password")
     return res
     .status(200)
-    .json(200,user,"Avatar updated acomplished")
+    .json(new ApiResponse(200,user,"Avatar updated acomplished"))
 }) 
 
 const updateUsercoverImage = asyncHandler( async ()=>{
@@ -291,7 +291,7 @@ const updateUsercoverImage = asyncHandler( async ()=>{
     
     return res
     .status(200)
-    .json(200,user,"coverImage updated acomplished")
+    .json(new ApiResponse(200,user,"coverImage updated acomplished"))
 }) 
 
 
