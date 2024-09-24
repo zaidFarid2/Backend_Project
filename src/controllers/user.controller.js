@@ -4,6 +4,7 @@ import { User } from "../models/user.model.js"
 import { uploadOnCloudinary } from "../utils/cloudinary.js"
 import { ApiResponse } from "../utils/apiResponse.js"
 import jwt from "jsonwebtoken"
+import mongoose from "mongoose"
 const createRefreshAndAccessToken = async(userId)=>{
     try {
         const user  = await User.findById(userId)
@@ -303,12 +304,12 @@ const getUserChannelProfile = asyncHandler( async(req,res)=>{
     }
 
     const channel =  await User.aggregate([{
-        $match:{
+        $match:{ //used to filter documents in a pipeline by specific conditions 
             username :username?.toLowerCase()
         },
         // mongo pipeline aggregation for finding subscriber
         $lookup:{
-            from:"subscriptions",
+            from:"subscription",
             localField: "_id",
             foreignField:"channel",
             as: "subscribers"
@@ -369,12 +370,6 @@ const getUserChannelProfile = asyncHandler( async(req,res)=>{
     )
 
 
-
-
-
-
-
-
 })
 
 
@@ -382,7 +377,8 @@ const getUserChannelProfile = asyncHandler( async(req,res)=>{
 
 
 
-export { userRegister,
+export { 
+    userRegister,
     userLogin,
     userLogout,
     updateRefreshToken,
@@ -391,5 +387,6 @@ export { userRegister,
     updateUserDetails,
     updateUserAvatar,
     updateUsercoverImage,
-    getUserChannelProfile
+    getUserChannelProfile,
+    
 }
