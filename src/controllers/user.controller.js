@@ -309,7 +309,7 @@ const getUserChannelProfile = asyncHandler( async(req,res)=>{
         },
         // mongo pipeline aggregation for finding subscriber
         $lookup:{
-            from:"subscription",
+            from:"subscriptions",
             localField: "_id",
             foreignField:"channel",
             as: "subscribers"
@@ -372,6 +372,52 @@ const getUserChannelProfile = asyncHandler( async(req,res)=>{
 
 })
 
+const getWatchHistory = asyncHandler(async ()=>{
+    const user  = await User.aggregate([
+        {
+            $match:{
+                _id: mongoose.Types.ObjectId(req.user._id)   //we use mongoose types for id bcause mongoose not work in aggregation pipeline
+            },
+            $lookup:{
+                from:"videos",
+                localField:"watchHistory",
+                foreignField:"_id",
+                as: "watchHistory",
+                pipeline:[ //nested piprline bacause there is nothing id in owner field
+                    {
+                        $lookup:{
+                            from:"users",
+                            localField:"owner",
+                            foreignField:"_id",
+                            as: "owner"
+                        },
+                        $project:{
+                            username:1,
+                            fullName:1,
+                            avatar:1
+                        }
+                    },{
+                        $addFields:{
+                            owner:{
+                                $first: "$owner"
+                            }
+                        }
+                    }
+                ]
+
+            }
+
+        }
+    ])
+    //want to console user 
+    res
+    .status(200)
+    .json(
+        ApiResponse(200,user[0].getWatchHistory,"Watch hisytory fetched seamlessly ")
+    )
+
+
+})
 
 
 
@@ -388,5 +434,6 @@ export {
     updateUserAvatar,
     updateUsercoverImage,
     getUserChannelProfile,
+    getWatchHistory
     
 }
