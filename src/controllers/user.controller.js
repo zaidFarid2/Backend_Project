@@ -94,7 +94,7 @@ const userRegister = asyncHandler( async (req,res)=>{
 
 })
 
-// ***************LOGINUSER*********************
+// LOGINUSER
 const userLogin = asyncHandler( async (req,res)=>{
     
     // collect data
@@ -142,7 +142,7 @@ const userLogin = asyncHandler( async (req,res)=>{
     )
 })
 
-// *********************UserLogout*****************************
+// UserLogout
 const userLogout = asyncHandler(async (req,res)=>{
     const user  = await User.findByIdAndUpdate(
         req.user._id,
@@ -170,7 +170,7 @@ const userLogout = asyncHandler(async (req,res)=>{
 
 // UpdateRefreshToken
 
-const updateRefreshToken = asyncHandler( async()=>{
+const updateRefreshToken = asyncHandler( async(req,res)=>{
     const incomingRefreshToken = req.cookies.refreshToken || req.body.refreshToken   
     if(!incomingRefreshToken){
         throw new ApiError(401,"unauthorized request")
@@ -185,8 +185,11 @@ const updateRefreshToken = asyncHandler( async()=>{
             throw new ApiError(401,"Invalid refresh token")
         }
     
+    
         // check incoming token from  user and  existed user  in database 
         if(incomingRefreshToken  !== user?._refreshToken ){
+            console.log(typeof user.refreshToken,user.refreshToken)
+            console.log(typeof incomingRefreshToken,incomingRefreshToken)
             throw new ApiError("401","Refresh Token is expired or used")
         }   
         const option = {
@@ -210,9 +213,10 @@ const updateRefreshToken = asyncHandler( async()=>{
 })
 
 
-const  changeCurrentPassword = asyncHandler( async ()=>{
+const  changeCurrentPassword = asyncHandler( async (req,res)=>{
 
-    const  {oldPassword,newPassword } = req.body 
+    const  {oldPassword,newPassword } = req.body
+    console.log(newPassword,oldPassword) 
     // db query find a user
     const user = await User.findById(req.user?._id)
     // check password ehich is define in models
@@ -232,7 +236,7 @@ const  changeCurrentPassword = asyncHandler( async ()=>{
 
 })
 
-const getCurrentUser = asyncHandler( async () =>{
+const getCurrentUser = asyncHandler( async (req,res) =>{
     const user = await User.findById(req.user?._id)
     return res
     .status(200)
@@ -244,7 +248,7 @@ const getCurrentUser = asyncHandler( async () =>{
 
 })
 
-const updateUserDetails = asyncHandler( async ()=>{
+const updateUserDetails = asyncHandler( async (req,res)=>{
     const {email,fullName} = req.body
     if(!(email || fullName )){
         throw new ApiError(400,"All fields are required")
@@ -256,7 +260,7 @@ const updateUserDetails = asyncHandler( async ()=>{
 
 })
 
-const updateUserAvatar = asyncHandler( async ()=>{
+const updateUserAvatar = asyncHandler( async (req,res)=>{
     const avatarLocalPath = req.file?.path
     if(!avatarLocalPath){
         throw new ApiError(400,"Avatar path is missing")
@@ -275,7 +279,7 @@ const updateUserAvatar = asyncHandler( async ()=>{
     .json(new ApiResponse(200,user,"Avatar updated acomplished"))
 }) 
 
-const updateUsercoverImage = asyncHandler( async ()=>{
+const updateUsercoverImage = asyncHandler( async (req,res)=>{
     const coverImageLocalPath = req.file?.path
     if(!coverImageLocalPath){
         throw new ApiError(400,"coverImage path is missing")
@@ -372,7 +376,7 @@ const getUserChannelProfile = asyncHandler( async(req,res)=>{
 
 })
 
-const getWatchHistory = asyncHandler(async ()=>{
+const getWatchHistory = asyncHandler(async (req,res)=>{
     const user  = await User.aggregate([
         {
             $match:{
