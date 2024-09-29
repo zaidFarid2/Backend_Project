@@ -78,7 +78,7 @@ const userRegister = asyncHandler( async (req,res)=>{
         coverImage : coverImage?.url || "",
         email,
         password,
-        username:username.toLowerCase()
+        username:username.toLowerCase(),
     })
     const UserCreated =  await User.findById(user._id).select(
         "-password -refreshToken" 
@@ -180,19 +180,19 @@ const updateRefreshToken = asyncHandler( async(req,res)=>{
         const decodedRefreshToken = jwt.verify(incomingRefreshToken,process.env.REFRESH_TOKEN_SECRET)
         console.log(decodedRefreshToken)
 
-        
+
     
         const user  = await User.findById(decodedRefreshToken?._id)
         if(!user){
             throw new ApiError(401,"Invalid refresh token")
         }
     
+        console.log(typeof user.refreshToken,user.refreshToken)
+        console.log(typeof incomingRefreshToken,incomingRefreshToken)
     
         // check incoming token from  user and  existed user  in database 
-        if(incomingRefreshToken  !== user?._refreshToken ){
-            console.log(typeof user.refreshToken,user.refreshToken)
-            console.log(typeof incomingRefreshToken,incomingRefreshToken)
-            throw new ApiError("401","Refresh Token is expired or used")
+        if(incomingRefreshToken  !== user?.refreshToken ){
+            throw new ApiError("401","token expired or used")
         }   
         const option = {
             httpOnly:true,
@@ -207,7 +207,7 @@ const updateRefreshToken = asyncHandler( async(req,res)=>{
             new ApiResponse(200,{accesssToken,newRefreshToken},"Token Redfreshed")
         )
     } catch (error) {
-        throw new ApiError(401,error?.message|| "Invalid refresh Token")
+        throw new ApiError(401,error?.message , "Invalid refresh Token")
     }
 
 
